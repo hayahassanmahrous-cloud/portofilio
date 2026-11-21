@@ -22,7 +22,10 @@
   /* project list lives in js/data.js */
   const WORK = window.HAYA_WORK || [];
   const CATS = window.HAYA_CATS || [];
-  const catLabel = k => (CATS.find(c => c.key === k) || {}).label || k;
+  const T = (k, fb) => (window.HAYA_T ? window.HAYA_T(k, fb) : fb);
+  const FMT = (k, v) => (window.HAYA_FMT ? window.HAYA_FMT(k, v) : '');
+  const strip = s => String(s).replace(/&amp;/g, '&').replace(/<[^>]*>/g, '');
+  const catLabel = k => strip(T('cat.' + k + '.label', (CATS.find(c => c.key === k) || {}).label || k));
   const countOf = k => WORK.filter(w => w.cat === k).length;
   const PAGE = document.body.dataset.page || 'home';
   const vimeoSrc = w => `https://player.vimeo.com/video/${w.id}?${w.h ? 'h=' + w.h + '&' : ''}autoplay=1&title=0&byline=0&portrait=0`;
@@ -126,7 +129,7 @@
      ============================================================ */
   function splitChars(el) {
     const txt = el.textContent; el.textContent = '';
-    [...txt].forEach(ch => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = ch; el.appendChild(s); });
+    (/[\u0600-\u06FF]/.test(txt) ? [txt] : [...txt]).forEach(ch => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = ch; el.appendChild(s); });
     return $$('.ch', el);
   }
   function splitWords(el) {
@@ -173,10 +176,10 @@
 
   function makeCard(w, i, n) {
     const b = document.createElement('button');
-    b.className = 'card'; b.type = 'button'; b.dataset.cursor = 'Play'; b.dataset.lb = i;
+    b.className = 'card'; b.type = 'button'; b.dataset.cursor = T('cur.play', 'Play'); b.dataset.lb = i;
     b.innerHTML = `<span class="card__in"><svg class="card__flower"><use href="#i-flower"/></svg><span class="card__img is-loading"><span class="ph" aria-hidden="true"><svg width="34" height="34"><use href="#i-play"/></svg></span><img alt="" decoding="async"><span class="card__play"><svg width="24" height="24"><use href="#i-play"/></svg></span></span><span class="card__cap"><b>${String(n + 1).padStart(2, '0')}</b> <span class="t"></span><em></em></span>${w.desc ? '<span class="card__desc"></span>' : ''}</span>`;
     $('.t', b).textContent = w.title; $('em', b).textContent = catLabel(w.cat); if (w.desc) $('.card__desc', b).textContent = w.desc;
-    b.setAttribute('aria-label', `Play ${w.title}`);
+    b.setAttribute('aria-label', `${T('play', 'Play')} ${w.title}`);
     thumbFor(w).then(d => {
       const box = $('.card__img', b);
       if (!d) { box.classList.remove('is-loading'); box.classList.add('is-empty'); return; }
@@ -190,11 +193,11 @@
   // home: Selected Work = the category menu
   function buildMenu() {
     const wrap = $('#cards'); if (!wrap) return;
-    wrap.className = 'cats';
+    wrap.className = 'cats'; wrap.replaceChildren();
     CATS.forEach((c, i) => {
       const n = countOf(c.key), a = document.createElement('a');
-      a.className = 'cat' + (n ? '' : ' is-soon'); a.href = `work.html#${c.key}`; a.dataset.iris = ''; a.dataset.cursor = n ? 'Open' : 'Soon';
-      a.innerHTML = `<span class="cat__in"><svg class="card__flower"><use href="#i-flower"/></svg><span class="cat__img is-loading" data-k="${c.key}"><span class="ph"><b>${c.code}</b></span><img alt="" decoding="async">${n ? '' : '<i class="cat__soon">Coming soon</i>'}</span><span class="cat__cap"><b>${String(i + 1).padStart(2, '0')}</b><span class="t">${c.label}</span><em>${n ? n + (n === 1 ? ' project' : ' projects') : ''}</em></span><span class="cat__blurb">${c.blurb}</span></span>`;
+      a.className = 'cat' + (n ? '' : ' is-soon'); a.href = `work.html#${c.key}`; a.dataset.iris = ''; a.dataset.cursor = n ? T('cur.open', 'Open') : T('cur.soon', 'Soon');
+      a.innerHTML = `<span class="cat__in"><svg class="card__flower"><use href="#i-flower"/></svg><span class="cat__img is-loading" data-k="${c.key}"><span class="ph"><b>${c.code}</b></span><img alt="" decoding="async">${n ? '' : `<i class="cat__soon">${T('soon', 'Coming soon')}</i>`}</span><span class="cat__cap"><b>${String(i + 1).padStart(2, '0')}</b><span class="t">${T('cat.' + c.key + '.label', c.label)}</span><em>${n ? FMT(n === 1 ? 'proj1' : 'projN', { n }) : ''}</em></span><span class="cat__blurb">${T('cat.' + c.key + '.blurb', c.blurb)}</span></span>`;
       const first = WORK.find(w => w.cat === c.key && (w.id || w.yt || w.img));
       first ? thumbFor(first).then(d => { const box = $('.cat__img', a); box.classList.remove('is-loading'); if (d) { $('img', a).src = d.src; box.classList.add('is-ready'); } else box.classList.add('is-empty'); }) : $('.cat__img', a).classList.replace('is-loading', 'is-empty');
       wrap.appendChild(a);
@@ -208,15 +211,16 @@
   }
 
   // work page: category tabs + filtered grid
+  let wkRender, wkFromHash, wkBound = false;
   function buildWork() {
     const wrap = $('#cards'), tabs = $('#tabs'); if (!wrap) return;
-    const all = [{ key: 'all', label: 'All' }, ...CATS];
+    const all = [{ key: 'all', label: T('all', 'All') }, ...CATS.map(c => ({ ...c, label: strip(T('cat.' + c.key + '.label', c.label)) }))];
     let cur = 'all';
     const render = (key, animate) => {
       cur = key; wrap.replaceChildren();
       const list = WORK.map((w, i) => ({ w, i })).filter(x => key === 'all' || x.w.cat === key);
       list.forEach((x, n) => wrap.appendChild(makeCard(x.w, x.i, n)));
-      if (!list.length) { const e = document.createElement('p'); e.className = 'empty'; e.innerHTML = `<svg class="gem" width="26" height="26"><use href="#i-star4"/></svg>${catLabel(key)} projects are coming soon.`; wrap.appendChild(e); }
+      if (!list.length) { const e = document.createElement('p'); e.className = 'empty'; e.innerHTML = `<svg class="gem" width="26" height="26"><use href="#i-star4"/></svg>${FMT('emptyMsg', { cat: catLabel(key) })}`; wrap.appendChild(e); }
       $$('button', tabs).forEach(t => { const on = t.dataset.k === key; t.classList.toggle('is-on', on); t.setAttribute('aria-selected', on); });
       if (hasGsap && !reduce && animate) { gsap.from(wrap.children, { opacity: 0, y: 50, scale: .92, duration: .8, stagger: .07, ease: 'power3.out', clearProps: 'all' }); }
       if (finePointer && hasGsap && !reduce) $$('.card', wrap).forEach(tiltCard);
@@ -230,7 +234,8 @@
     }));
     const fromHash = () => { const k = location.hash.slice(1); return all.some(c => c.key === k) ? k : 'all'; };
     render(fromHash(), false);
-    addEventListener('hashchange', () => render(fromHash(), true));
+    wkRender = render; wkFromHash = fromHash;
+    if (!wkBound) { wkBound = true; addEventListener('hashchange', () => wkRender(wkFromHash(), true)); }
   }
 
   /* ============================================================
@@ -570,12 +575,12 @@
 
   function initMisc() {
     const clock = $('#clock');
-    const tick = () => { try { clock.textContent = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: CONFIG.timezone }).format(new Date()) + ' local'; } catch (e) { clock.textContent = ''; } };
+    const tick = () => { try { clock.textContent = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: CONFIG.timezone }).format(new Date()) + ' ' + T('local', 'local'); } catch (e) { clock.textContent = ''; } };
     if (clock) { tick(); setInterval(tick, 30000); }
     const toast = $('#toast'); let tt;
     const say = m => { toast.textContent = m; toast.classList.add('is-on'); clearTimeout(tt); tt = setTimeout(() => toast.classList.remove('is-on'), 2200); };
     $('#mailLink')?.addEventListener('click', e => {
-      if (navigator.clipboard && finePointer) { e.preventDefault(); navigator.clipboard.writeText(CONFIG.email).then(() => say('Email copied ✦ ' + CONFIG.email), () => (location.href = 'mailto:' + CONFIG.email)); }
+      if (navigator.clipboard && finePointer) { e.preventDefault(); navigator.clipboard.writeText(CONFIG.email).then(() => say(T('copied', 'Email copied ✦') + ' ' + CONFIG.email), () => (location.href = 'mailto:' + CONFIG.email)); }
     });
     // tap burst on touch devices
     if (!finePointer && !reduce) document.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') { sprites.spark || ['spark', 'star4', 'flower'].forEach(loadSprite); startFxLoopForTouch(); burstAt(e.clientX, e.clientY); } });
@@ -700,6 +705,16 @@
       gsap.delayedCall(.08, heroIn);
     } else { loader && loader.remove(); heroIn(); }
   }
+
+  // called by js/i18n.js after the language changes: rebuild everything that is generated by script
+  window.HAYA_REBUILD = () => {
+    try {
+      if (document.body.dataset.page === 'home') buildMenu();
+      if ($('#tabs')) buildWork();
+      addOrnaments();
+      hasGsap && ScrollTrigger.refresh();
+    } catch (e) { console.warn(e); }
+  };
 
   async function boot() {
     initIris();

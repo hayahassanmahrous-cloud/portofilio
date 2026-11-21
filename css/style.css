@@ -475,3 +475,50 @@ body:has(.modal.is-open) .snd{opacity:0;pointer-events:none}
 /* during the intro the sound button sits next to 'Skip intro' */
 html.is-loading .snd{left:auto;right:calc(clamp(14px,2vw,28px) + 160px);bottom:clamp(14px,2vw,28px)}
 html.is-loading .snd__tip{left:auto;right:62px}
+
+/* ============ language switcher ============ */
+.lang{position:relative;flex:none;margin-left:4px}
+.lang__btn{display:flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:99px;color:#fff;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);font:600 16px/1 var(--f-display);cursor:pointer;transition:background .3s}
+.lang__btn:hover{background:rgba(255,255,255,.3)}
+.lang__list{position:absolute;right:0;top:calc(100% + 10px);min-width:160px;margin:0;padding:8px;list-style:none;border-radius:20px;background:rgba(252,239,233,.97);box-shadow:0 18px 40px -14px rgba(40,20,90,.6),inset 0 0 0 1.5px var(--gold);opacity:0;visibility:hidden;transform:translateY(-8px) scale(.97);transform-origin:top right;transition:.3s var(--ease);z-index:5}
+.lang.is-open .lang__list{opacity:1;visibility:visible;transform:none}
+.lang__list button{display:block;width:100%;padding:10px 16px;border-radius:14px;color:#4a3170;text-align:start;font-size:19px;line-height:1.2;cursor:pointer;white-space:nowrap}
+.lang__list button:hover,.lang__list button.is-on{background:#e7dcf6}
+.lang__list button.is-on{font-weight:700}
+.nav__links a{white-space:nowrap}
+
+/* ============ fonts per language ============ */
+html.l-ar{--f-display:"Amiri","Noto Naskh Arabic","Traditional Arabic",serif;--f-body:"Cairo","Segoe UI",Tahoma,Arial,sans-serif}
+html.l-ko{--f-display:"Nanum Myeongjo","Noto Serif KR","Apple SD Gothic Neo","Malgun Gothic",serif;--f-body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+html.l-ja{--f-display:"Shippori Mincho","Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",serif;--f-body:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif}
+html.l-ar *,html.l-ko *,html.l-ja *{font-style:normal!important}
+html.l-ar *{letter-spacing:0!important;text-transform:none!important}          /* Arabic letters must stay joined */
+html.l-ko *,html.l-ja *{letter-spacing:.01em!important}
+html.l-ko .hero__role,html.l-ja .hero__role,html.l-ar .hero__role{letter-spacing:.06em!important}
+html.l-ar .h2,html.l-ko .h2,html.l-ja .h2{line-height:1.22}
+html.l-ko .h2,html.l-ja .h2{font-size:clamp(44px,5.8vw,88px)}
+html.l-ar .h2{font-size:clamp(50px,6.6vw,98px)}
+html.l-ar .lead,html.l-ko .lead,html.l-ja .lead{line-height:1.85}
+
+/* ============ Arabic: text reads right-to-left, the artwork layout stays put ============ */
+html.rtl .sec__head,html.rtl .process__body,html.rtl .about__body,html.rtl .paper,html.rtl .skills__list,html.rtl .soft,html.rtl .contact__body,html.rtl .wk-hero .wrap,html.rtl .wk-cta,
+html.rtl .cat__cap,html.rtl .cat__blurb,html.rtl .card__cap,html.rtl .empty,html.rtl .modal__cap,html.rtl .tabs,html.rtl .nav__sub,html.rtl .hero__foot,html.rtl .lang__list{direction:rtl}
+html.rtl .nav__links,html.rtl .nav,html.rtl .logos__rail,html.rtl .compare,html.rtl .stats,html.rtl .cards,html.rtl .cats{direction:ltr}
+html.rtl .nav__links a,html.rtl .tabs button,html.rtl .stats>div,html.rtl .btn{direction:rtl}
+html.rtl .h2,html.rtl .num,html.rtl .note,html.rtl .lead{text-align:right}
+html.rtl .sec__head,html.rtl .process__body,html.rtl .about__body,html.rtl .skills__list,html.rtl .contact__body{align-items:flex-end;text-align:right}
+html.rtl .about__grid,html.rtl .skills__grid,html.rtl .process__grid{direction:ltr}
+html.rtl .skills__list li{flex-direction:row-reverse;justify-content:flex-start}
+html.rtl .bar p{direction:rtl}
+html.rtl .lang__list{right:auto;left:0;transform-origin:top left}
+html.rtl .lang__list button{text-align:right}
+html.rtl .hero__foot{direction:ltr}
+html.rtl .hero__tag,html.rtl .hero__role{direction:rtl}
+
+.cat__cap em,.card__cap em{white-space:nowrap}
+html.l-ja .cat__cap .t,html.l-ko .cat__cap .t,html.l-ja .card__cap .t,html.l-ko .card__cap .t{font-size:.82em;line-height:1.3;line-break:strict;overflow-wrap:anywhere}
+html.l-ar .cat__cap .t{line-height:1.3}
+/* native-script names in the hero */
+.hero__title .line{white-space:nowrap}
+html.l-ja .hero__title,html.l-ko .hero__title{font-size:calc(var(--u) * 6.6);line-height:1.1;font-weight:700}
+html.l-ar .hero__title{font-size:calc(var(--u) * 9.6);line-height:1}

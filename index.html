@@ -58,9 +58,9 @@
   <div class="loader__ui">
     <div class="loader__count"><span id="loaderNum">0</span><small>%</small></div>
     <div class="loader__bar"><i id="loaderBar"></i></div>
-    <p class="loader__hint">Opening Haya's little world ✦</p>
+    <p class="loader__hint" data-i18n="loader.hint">Opening Haya's little world ✦</p>
   </div>
-  <button class="loader__skip" id="loaderSkip" type="button">Skip intro <svg width="16" height="16"><use href="#i-arrow"/></svg></button>
+  <button class="loader__skip" id="loaderSkip" type="button"><span data-i18n="loader.skip">Skip intro</span> <svg width="16" height="16"><use href="#i-arrow"/></svg></button>
 </div>
 
 <!-- cursor system -->
@@ -80,11 +80,11 @@
 <header class="nav" id="nav">
   <a href="#top" class="nav__logo" data-scroll aria-label="Haya — back to top"><svg class="gem" width="26" height="26"><use href="#i-star4"/></svg>Haya<svg class="gem sm" width="12" height="12"><use href="#i-star4"/></svg></a>
   <nav class="nav__links" id="navLinks" aria-label="Main">
-    <a href="#process" data-scroll>Behind the Scenes</a>
-    <div class="nav__dd"><a href="#work" data-scroll>Work</a><div class="nav__sub"><a href="work.html#2d" data-iris>2D Animation</a><a href="work.html#mg" data-iris>2D / 3D Motion Graphics</a><a href="work.html#3d" data-iris>3D Animation</a><a href="work.html#story" data-iris>Storyboard</a><a href="work.html#concept" data-iris>Concept Art &amp; Illustrations</a><a href="work.html#interior" data-iris>Interior Design</a></div></div>
-    <a href="#about" data-scroll>About</a>
-    <a href="#skills" data-scroll>Skills</a>
-    <a href="#contact" data-scroll>Contact</a>
+    <a href="#process" data-scroll data-i18n="nav.process">Behind the Scenes</a>
+    <div class="nav__dd"><a href="#work" data-scroll data-i18n="nav.work">Work</a><div class="nav__sub"><a href="work.html#2d" data-iris data-i18n="cat.2d.label">2D Animation</a><a href="work.html#mg" data-iris data-i18n="cat.mg.label">2D / 3D Motion Graphics</a><a href="work.html#3d" data-iris data-i18n="cat.3d.label">3D Animation</a><a href="work.html#story" data-iris data-i18n="cat.story.label">Storyboard</a><a href="work.html#concept" data-iris data-i18n="cat.concept.label">Concept Art &amp; Illustrations</a><a href="work.html#interior" data-iris data-i18n="cat.interior.label">Interior Design</a></div></div>
+    <a href="#about" data-scroll data-i18n="nav.about">About</a>
+    <a href="#skills" data-scroll data-i18n="nav.skills">Skills</a>
+    <a href="#contact" data-scroll data-i18n="nav.contact">Contact</a>
   </nav>
   <svg class="nav__gem gem" width="30" height="30" aria-hidden="true"><use href="#i-star4"/></svg>
   <button class="nav__burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks"><i></i><i></i></button>
@@ -121,15 +121,15 @@
     </svg>
     <div class="hero__orbtext">
       <h1 class="hero__title" aria-label="Haya Hassan">
-        <span class="line" aria-hidden="true"><span class="chars">Haya</span></span>
-        <span class="line" aria-hidden="true"><span class="chars">Hassan</span></span>
+        <span class="line" aria-hidden="true"><span class="chars" data-i18n="name1">Haya</span></span>
+        <span class="line" aria-hidden="true"><span class="chars" data-i18n="name2">Hassan</span></span>
       </h1>
-      <p class="hero__role" data-hero><span>2D ANIMATION &amp;<br>VISUAL STORYTELLER</span></p>
+      <p class="hero__role" data-hero><span data-i18n="hero.role">2D ANIMATION &amp;<br>VISUAL STORYTELLER</span></p>
     </div>
   </div>
   <div class="wrap hero__foot">
-    <p class="hero__tag" data-hero>Bringing characters<br>and stories to life <svg class="heart" width="20" height="20"><use href="#i-heart"/></svg></p>
-    <button class="btn btn--dark" id="reelBtn" data-reel type="button" data-hero data-magnetic><span class="btn__ico"><svg width="16" height="16"><use href="#i-play"/></svg></span><span>Watch My Showreel</span></button>
+    <p class="hero__tag" data-hero data-i18n="hero.tag">Bringing characters<br>and stories to life <svg class="heart" width="20" height="20"><use href="#i-heart"/></svg></p>
+    <button class="btn btn--dark" id="reelBtn" data-reel type="button" data-hero data-magnetic><span class="btn__ico"><svg width="16" height="16"><use href="#i-play"/></svg></span><span data-i18n="btn.reel">Watch My Showreel</span></button>
   </div>
 </section>
 
@@ -144,16 +144,16 @@
       <div class="compare" id="compare" role="group" aria-label="Key drawings compared with the final animation">
         <video id="genkaVideo" src="./media/genka.mp4" muted loop playsinline preload="auto"></video>
         <video id="finalVideo" class="compare__final" src="./media/final.mp4" muted loop playsinline preload="auto" aria-hidden="true"></video>
-        <span class="compare__tag l">Key drawings</span><span class="compare__tag r">Final animation</span>
+        <span class="compare__tag l" data-i18n="cmp.l">Key drawings</span><span class="compare__tag r" data-i18n="cmp.r">Final animation</span>
         <div class="compare__handle" id="handle" role="slider" tabindex="0" aria-label="Reveal slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i><svg width="22" height="22" class="gem"><use href="#i-star4"/></svg></div>
       </div>
-      <span class="compare__hint">Drag to compare ✦</span>
+      <span class="compare__hint" data-i18n="cmp.hint">Drag to compare ✦</span>
     </div>
     <div class="process__body">
-      <span class="num" data-reveal>I · Process</span>
-      <h2 class="h2" data-split>Behind<br>the Scenes</h2>
-      <p class="note" data-reveal>From sketches<br>to final animation!</p>
-      <button class="btn btn--dark" id="reelBtn2" data-reel type="button" data-reveal data-magnetic><span class="btn__ico"><svg width="16" height="16"><use href="#i-play"/></svg></span><span>Watch My Showreel</span></button>
+      <span class="num" data-reveal data-i18n="proc.num">I · Process</span>
+      <h2 class="h2" data-split data-i18n="proc.h2">Behind<br>the Scenes</h2>
+      <p class="note" data-reveal data-i18n="proc.note">From sketches<br>to final animation!</p>
+      <button class="btn btn--dark" id="reelBtn2" data-reel type="button" data-reveal data-magnetic><span class="btn__ico"><svg width="16" height="16"><use href="#i-play"/></svg></span><span data-i18n="btn.reel">Watch My Showreel</span></button>
     </div>
   </div>
 </section>
@@ -162,7 +162,7 @@
 
 <!-- WORKED WITH -->
 <section class="logos" id="clients" aria-label="Clients and studios I have worked with">
-  <p class="logos__title" data-reveal><svg class="gem" width="18" height="18"><use href="#i-star4"/></svg> Worked with <svg class="gem" width="18" height="18"><use href="#i-star4"/></svg></p>
+  <p class="logos__title" data-reveal><svg class="gem" width="18" height="18"><use href="#i-star4"/></svg> <span data-i18n="logos.title">Worked with</span> <svg class="gem" width="18" height="18"><use href="#i-star4"/></svg></p>
   <div class="logos__rail" id="logoRail">
     <ul class="logos__track" id="logoTrack">
       <li class="lg"><img src="./logos/alex.webp" alt="Alexandria University" width="360" height="154"></li>
@@ -171,7 +171,7 @@
       <li class="lg"><img src="./logos/eru.webp" alt="Egyptian Russian University" width="187" height="200"></li>
       <li class="lg"><img src="./logos/stc.webp" alt="stc tv" width="354" height="123"></li>
       <li class="lg"><img src="./logos/hassan.webp" alt="حسان وإخوانه" width="294" height="200"></li>
-      <li class="lg lg--txt"><span>and many more</span><svg class="gem" width="20" height="20"><use href="#i-star4"/></svg></li>
+      <li class="lg lg--txt"><span data-i18n="logos.more">and many more</span><svg class="gem" width="20" height="20"><use href="#i-star4"/></svg></li>
     </ul>
   </div>
 </section>
@@ -180,12 +180,12 @@
 <section class="sec work" id="work">
   <div class="wrap">
     <div class="sec__head">
-      <span class="num" data-reveal>II · Work</span>
-      <h2 class="h2" data-split>Work</h2>
-      <p class="note" data-reveal>Pick a category to explore.</p>
+      <span class="num" data-reveal data-i18n="work.num">II · Work</span>
+      <h2 class="h2" data-split data-i18n="nav.work">Work</h2>
+      <p class="note" data-reveal data-i18n="work.note">Pick a category to explore.</p>
     </div>
     <div class="cards" id="cards"></div>
-    <div class="cards__more"><a href="work.html" class="btn btn--dark" data-iris data-magnetic><span>View All Work</span><svg width="18" height="18"><use href="#i-arrow"/></svg></a></div>
+    <div class="cards__more"><a href="work.html" class="btn btn--dark" data-iris data-magnetic><span data-i18n="work.all">View All Work</span><svg width="18" height="18"><use href="#i-arrow"/></svg></a></div>
   </div>
 </section>
 
@@ -195,19 +195,19 @@
 <section class="sec about" id="about">
   <div class="wrap about__grid">
     <div class="about__body">
-      <span class="num" data-reveal>III · About</span>
-      <h2 class="h2" data-split>About Me</h2>
-      <p class="lead" data-reveal>Hi! I'm Haya Hassan, a 2D animator and visual storyteller based in Alexandria, Egypt. I love bringing characters, emotions, and stories to life through animation — especially children's educational animation. <svg class="heart" width="18" height="18"><use href="#i-heart"/></svg></p>
+      <span class="num" data-reveal data-i18n="about.num">III · About</span>
+      <h2 class="h2" data-split data-i18n="about.h2">About Me</h2>
+      <p class="lead" data-reveal data-i18n="about.lead">Hi! I'm Haya Hassan, a 2D animator and visual storyteller based in Alexandria, Egypt. I love bringing characters, emotions, and stories to life through animation — especially children's educational animation. <svg class="heart" width="18" height="18"><use href="#i-heart"/></svg></p>
       <div class="stats" data-reveal>
-        <div><b data-count="5" data-suffix="+">0</b><span>years of animation &amp; motion work</span></div>
-        <div><b data-count="5">0</b><span>countries worked with</span></div>
-        <div><b data-count="1" data-prefix="#">0</b><span>in my animation diploma class</span></div>
+        <div><b data-count="5" data-suffix="+">0</b><span data-i18n="about.s1">years of animation &amp; motion work</span></div>
+        <div><b data-count="5">0</b><span data-i18n="about.s2">countries worked with</span></div>
+        <div><b data-count="1" data-prefix="#">0</b><span data-i18n="about.s3">in my animation diploma class</span></div>
       </div>
-      <a href="#contact" class="link" data-scroll data-reveal>Learn More <svg width="18" height="18"><use href="#i-arrow"/></svg></a>
+      <a href="#contact" class="link" data-scroll data-reveal data-i18n="about.more">Learn More <svg width="18" height="18"><use href="#i-arrow"/></svg></a>
     </div>
     <aside class="paper" data-reveal="right">
-      <div class="paper__row"><svg width="34" height="34" class="ico"><use href="#i-cap"/></svg><div><h3>Education</h3><p>2D Animation &amp; Motion Graphics Diploma, ITI<br>B.A. Interior Architecture, Alexandria University</p></div></div>
-      <div class="paper__row"><svg width="34" height="34" class="ico"><use href="#i-bag"/></svg><div><h3>Experience</h3><p>2D Animator &amp; Motion Designer<br>Egypt · KSA · UAE · Kuwait · Oman</p></div></div>
+      <div class="paper__row"><svg width="34" height="34" class="ico"><use href="#i-cap"/></svg><div><h3 data-i18n="edu.h">Education</h3><p data-i18n="edu.p">2D Animation &amp; Motion Graphics Diploma, ITI<br>B.A. Interior Architecture, Alexandria University</p></div></div>
+      <div class="paper__row"><svg width="34" height="34" class="ico"><use href="#i-bag"/></svg><div><h3 data-i18n="exp.h">Experience</h3><p data-i18n="exp.p">2D Animator &amp; Motion Designer<br>Egypt · KSA · UAE · Kuwait · Oman</p></div></div>
     </aside>
   </div>
 </section>
@@ -218,19 +218,19 @@
 <section class="sec skills" id="skills">
   <div class="wrap skills__grid">
     <div class="skills__list">
-      <span class="num" data-reveal>IV · Skills</span>
-      <h2 class="h2" data-split>Animation<br>Skills</h2>
+      <span class="num" data-reveal data-i18n="skills.num">IV · Skills</span>
+      <h2 class="h2" data-split data-i18n="skills.h2">Animation<br>Skills</h2>
       <ul>
-        <li data-reveal><svg class="star"><use href="#i-star"/></svg>2D Character Animation</li>
-        <li data-reveal><svg class="star"><use href="#i-star"/></svg>Frame-by-frame Animation</li>
-        <li data-reveal><svg class="star"><use href="#i-star"/></svg>Cutout Animation</li>
-        <li data-reveal><svg class="star"><use href="#i-star"/></svg>Motion Graphics</li>
-        <li data-reveal><svg class="star"><use href="#i-star"/></svg>Visual Storytelling</li>
-        <li data-reveal><svg class="star"><use href="#i-star"/></svg>Storyboarding</li>
+        <li data-reveal data-i18n="sk1"><svg class="star"><use href="#i-star"/></svg>2D Character Animation</li>
+        <li data-reveal data-i18n="sk2"><svg class="star"><use href="#i-star"/></svg>Frame-by-frame Animation</li>
+        <li data-reveal data-i18n="sk3"><svg class="star"><use href="#i-star"/></svg>Cutout Animation</li>
+        <li data-reveal data-i18n="sk4"><svg class="star"><use href="#i-star"/></svg>Motion Graphics</li>
+        <li data-reveal data-i18n="sk5"><svg class="star"><use href="#i-star"/></svg>Visual Storytelling</li>
+        <li data-reveal data-i18n="sk6"><svg class="star"><use href="#i-star"/></svg>Storyboarding</li>
       </ul>
     </div>
     <div class="soft">
-      <h3 class="h3" data-reveal><svg class="gem" width="18" height="18"><use href="#i-star4"/></svg> Software Proficiency</h3>
+      <h3 class="h3" data-reveal data-i18n="soft.h"><svg class="gem" width="18" height="18"><use href="#i-star4"/></svg> Software Proficiency</h3>
       <div class="bar" data-pct="90" data-reveal><div><p>Toon Boom Harmony<b>0%</b></p><i><u></u></i></div></div>
       <div class="bar" data-pct="85" data-reveal><div><p>Adobe After Effects<b>0%</b></p><i><u></u></i></div></div>
       <div class="bar" data-pct="90" data-reveal><div><p>Adobe Photoshop<b>0%</b></p><i><u></u></i></div></div>
@@ -251,14 +251,14 @@
   <svg class="sky__castle k4" data-speed="0.2" aria-hidden="true"><use href="#castle"/></svg>
   <div class="wrap contact__grid">
     <div class="contact__body">
-      <span class="num num--lt" data-reveal>V · Contact</span>
-      <h2 class="h2 h2--xl" data-split>Let's Create<br>Together! <svg class="heart" width="44" height="44"><use href="#i-heart"/></svg></h2>
+      <span class="num num--lt" data-reveal data-i18n="contact.num">V · Contact</span>
+      <h2 class="h2 h2--xl" data-split data-i18n="contact.h2">Let's Create<br>Together! <svg class="heart" width="44" height="44"><use href="#i-heart"/></svg></h2>
       <ul class="contact__list">
         <li data-reveal><svg width="24" height="24"><use href="#i-mail"/></svg><a href="mailto:hayahassanmahrous@gmail.com" id="mailLink" data-cursor="Copy">hayahassanmahrous@gmail.com</a></li>
-        <li data-reveal><svg width="24" height="24"><use href="#i-in"/></svg><a href="https://www.linkedin.com/in/haya-hassan-b14b651a8/" target="_blank" rel="noopener">linkedin.com/in/haya-hassan</a></li>
-        <li data-reveal><svg width="24" height="24"><use href="#i-pin"/></svg><span>Alexandria, Egypt · <em id="clock">--:--</em></span></li>
+        <li data-reveal><svg width="24" height="24"><use href="#i-in"/></svg><a href="https://www.linkedin.com/in/haya-hassan-b6b834412/" target="_blank" rel="noopener">linkedin.com/in/haya-hassan-b6b834412</a></li>
+        <li data-reveal><svg width="24" height="24"><use href="#i-pin"/></svg><span><span data-i18n="contact.loc">Alexandria, Egypt</span> · <em id="clock">--:--</em></span></li>
       </ul>
-      <a href="mailto:hayahassanmahrous@gmail.com" class="btn btn--dark" data-reveal data-magnetic><span>Get in Touch</span><svg width="18" height="18"><use href="#i-arrow"/></svg></a>
+      <a href="mailto:hayahassanmahrous@gmail.com" class="btn btn--dark" data-reveal data-magnetic><span data-i18n="contact.btn">Get in Touch</span><svg width="18" height="18"><use href="#i-arrow"/></svg></a>
     </div>
   </div>
   <footer class="foot">
@@ -280,6 +280,7 @@
 <script src="./vendor/ScrollTrigger.min.js"></script>
 <script src="./vendor/lenis.min.js"></script>
 <script src="js/data.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/main.js"></script>
 <script src="js/music.js"></script>
 </body>

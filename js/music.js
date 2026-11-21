@@ -12,7 +12,7 @@
 
   const btn = document.createElement('button');
   btn.className = 'snd'; btn.type = 'button'; btn.dataset.cursor = 'Music';
-  btn.innerHTML = '<i></i><i></i><i></i><i></i><span class="snd__tip">Tap for music ♪</span>';
+  btn.innerHTML = '<i></i><i></i><i></i><i></i><span class="snd__tip">' + (window.HAYA_T ? HAYA_T('music') : 'Tap for music ♪') + '</span>';
   const paint = () => { const on = !a.paused && want; btn.classList.toggle('is-on', on); btn.setAttribute('aria-pressed', on); btn.setAttribute('aria-label', on ? 'Turn music off' : 'Turn music on'); };
 
   let fade;
