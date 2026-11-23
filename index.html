@@ -57,13 +57,8 @@
 <!-- ============ Intro loader ============ -->
 <div class="iris" id="iris" aria-hidden="true"></div>
 <div class="loader" id="loader" role="status" aria-live="polite">
-  <video id="introVideo" src="./intro/intro.mp4" poster="./intro/i000.webp" muted playsinline autoplay preload="auto" aria-hidden="true"></video>
+  <video id="introVideo" poster="./intro/i000.webp" muted defaultmuted playsinline webkit-playsinline autoplay preload="auto" disablepictureinpicture aria-hidden="true"><source src="./intro/intro.mp4" type="video/mp4"><source src="./intro/intro.webm" type="video/webm"></video>
   <canvas id="loaderCanvas" aria-hidden="true"></canvas>
-  <div class="loader__ui">
-    <div class="loader__count"><span id="loaderNum">0</span><small>%</small></div>
-    <div class="loader__bar"><i id="loaderBar"></i></div>
-    <p class="loader__hint" data-i18n="loader.hint">Opening Haya's little world ✦</p>
-  </div>
   <button class="loader__skip" id="loaderSkip" type="button"><span data-i18n="loader.skip">Skip intro</span> <svg width="16" height="16"><use href="#i-arrow"/></svg></button>
 </div>
 

@@ -747,11 +747,11 @@
     if (quick) { await loadSet('loop', 6); if (!revealed) reveal(); return; }
     loader.classList.add('is-playing');
     // the intro is one small video, so it starts instantly; the frame-by-frame player is only a fallback
-    const iv = $('#introVideo');
+    const iv = $('#introVideo'); if (iv) { iv.muted = true; iv.setAttribute('muted', ''); }
     const useFrames = () => { if (!revealed) reveal(); };   // video unavailable → go straight to the site
     if (!iv) return useFrames();
     iv.addEventListener('ended', () => reveal());
-    iv.addEventListener('error', useFrames);
+    iv.addEventListener('error', useFrames); iv.querySelectorAll('source').forEach(s => s.addEventListener('error', () => { if (![...iv.querySelectorAll('source')].some(x => x !== s)) useFrames(); }));
     const p = iv.play(); p && p.catch && p.catch(useFrames);
     setTimeout(() => { if (!revealed && iv.readyState < 2) useFrames(); }, 4000);
   }
