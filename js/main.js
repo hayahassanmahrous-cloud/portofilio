@@ -705,6 +705,7 @@
   function reveal() {
     if (revealed) return; revealed = true;
     introPlayer && introPlayer.pause();
+    { const v = $('#introVideo'); v && v.pause(); }
     root.classList.remove('is-loading', 'iris-in');
     window.scrollTo(0, 0);
     lenis && (lenis.scrollTo(0, { immediate: true }), lenis.start());
@@ -741,15 +742,18 @@
     if (cameByIris && loader) loader.style.display = 'none';
     const quick = reduce || /[?&]nointro/.test(location.search) || cameByIris;
     skip.addEventListener('click', () => { introPlayer && introPlayer.pause(); reveal(); });
-    const introReady = loadSet('intro', 10);       // just the first few intro frames, then straight into the intro
-    loadSet('loop');                                 // the landing loop loads quietly behind it
+    loadSet('loop');                                 // the landing loop loads quietly behind the intro
     initCompare();
-    await introReady;
-    if (revealed) return;
-    if (quick) return reveal();
+    if (quick) { await loadSet('loop', 6); if (!revealed) reveal(); return; }
     loader.classList.add('is-playing');
-    introPlayer = new Player($('#loaderCanvas'), sets.intro, { cover: true });
-    introPlayer.play(reveal);
+    // the intro is one small video, so it starts instantly; the frame-by-frame player is only a fallback
+    const iv = $('#introVideo');
+    const useFrames = () => { if (!revealed) reveal(); };   // video unavailable → go straight to the site
+    if (!iv) return useFrames();
+    iv.addEventListener('ended', () => reveal());
+    iv.addEventListener('error', useFrames);
+    const p = iv.play(); p && p.catch && p.catch(useFrames);
+    setTimeout(() => { if (!revealed && iv.readyState < 2) useFrames(); }, 4000);
   }
 
   function bootWork() {
@@ -761,7 +765,8 @@
   }
 
   const cameByIris = root.classList.contains('iris-in');
-  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(() => {
-    try { boot(); } catch (err) { console.error(err); root.classList.add('no-gsap'); root.classList.remove('is-loading'); $('#loader')?.remove(); }
-  });
+  // start at once (no waiting for web fonts); re-measure the hero when they arrive
+  const go = () => { try { boot(); } catch (err) { console.error(err); root.classList.add('no-gsap'); root.classList.remove('is-loading'); $('#loader')?.remove(); } };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(go, 0)); else setTimeout(go, 0);
+  document.fonts && document.fonts.ready && document.fonts.ready.then(() => { try { layoutHero(); hasGsap && ScrollTrigger.refresh(); } catch (e) {} });
 })();

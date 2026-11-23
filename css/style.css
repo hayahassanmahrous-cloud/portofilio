@@ -525,3 +525,5 @@ html.l-ar .hero__title{font-size:calc(var(--u) * 9.6);line-height:1}
 
 /* intro plays straight away: no counter / bar / hint */
 .loader__ui{display:none!important}
+.loader{background:#d9c8ea url(../intro/i000.webp) center/cover no-repeat}
+.loader video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}.loader.is-canvas video{display:none}.loader__skip{z-index:3}
