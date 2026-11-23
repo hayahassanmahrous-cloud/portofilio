@@ -61,6 +61,19 @@
       setTimeout(finish, 15000);
     });
   }
+  // load one set; resolves once its first `need` frames are in (so the intro can start straight away)
+  function loadSet(name, need) {
+    return new Promise(resolve => {
+      const total = CONFIG[name].count, k = Math.min(need || total, total); let got = 0, done = false;
+      const fin = () => { if (!done) { done = true; resolve(); } };
+      for (let i = 0; i < total; i++) {
+        const img = new Image(); img.decoding = 'async';
+        img.onload = img.onerror = () => { if (i < k && ++got >= k) fin(); };
+        img.src = CONFIG[name].path(i); sets[name][i] = img;
+      }
+      setTimeout(fin, 6000);
+    });
+  }
 
   class Player {
     constructor(canvas, set, { cover = true, alpha = false, loop = false } = {}) {
@@ -728,13 +741,12 @@
     if (cameByIris && loader) loader.style.display = 'none';
     const quick = reduce || /[?&]nointro/.test(location.search) || cameByIris;
     skip.addEventListener('click', () => { introPlayer && introPlayer.pause(); reveal(); });
-    await preload(p => { const v = Math.round(p * 100); num.textContent = v; bar.style.width = v + '%'; });
+    const introReady = loadSet('intro', 10);       // just the first few intro frames, then straight into the intro
+    loadSet('loop');                                 // the landing loop loads quietly behind it
     initCompare();
+    await introReady;
     if (revealed) return;
     if (quick) return reveal();
-    num.textContent = '100'; bar.style.width = '100%';
-    await new Promise(r => setTimeout(r, 60));
-    if (revealed) return;
     loader.classList.add('is-playing');
     introPlayer = new Player($('#loaderCanvas'), sets.intro, { cover: true });
     introPlayer.play(reveal);

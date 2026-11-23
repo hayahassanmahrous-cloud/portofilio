@@ -5,10 +5,12 @@
   const SRC = './media/music.mp3', VOL = 0.35;
   const store = { get: k => { try { return sessionStorage.getItem(k) || localStorage.getItem(k); } catch (e) { return null; } },
                   set: (k, v, s) => { try { (s ? sessionStorage : localStorage).setItem(k, v); } catch (e) {} } };
-  const a = window.hayaAudio = new Audio(); a.src = SRC; a.loop = true; a.preload = 'auto'; a.volume = 0;
+  const a = window.hayaAudio = new Audio(); a.src = SRC; a.loop = false; a.preload = 'auto'; a.volume = 0;
   let want = store.get('hayaMusic') !== 'off';      // visitor's choice
   let held = false;                                  // paused because a video is open / tab hidden
-  const t0 = parseFloat(store.get('hayaMusicT')); if (t0) a.addEventListener('loadedmetadata', () => { try { a.currentTime = t0 % (a.duration || 1e9); } catch (e) {} }, { once: true });
+  const END = 90;                                    // the track ends at 1:30
+  let ended = false;
+  const t0 = parseFloat(store.get('hayaMusicT')); if (t0 >= END) ended = true; else if (t0) a.addEventListener('loadedmetadata', () => { try { a.currentTime = t0; } catch (e) {} }, { once: true });
 
   const btn = document.createElement('button');
   btn.className = 'snd'; btn.type = 'button'; btn.dataset.cursor = 'Music';
@@ -17,11 +19,11 @@
 
   let fade;
   const ramp = (to, done) => { clearInterval(fade); fade = setInterval(() => { const d = to - a.volume; if (Math.abs(d) < .03) { a.volume = to; clearInterval(fade); done && done(); } else a.volume = Math.max(0, Math.min(1, a.volume + Math.sign(d) * .03)); }, 40); };
-  const play = () => { if (!want || held) return Promise.resolve(); return a.play().then(() => { ramp(VOL); paint(); }).catch(() => { btn.classList.add('need'); paint(); }); };
+  const play = () => { if (!want || held || ended) return Promise.resolve(); return a.play().then(() => { ramp(VOL); paint(); }).catch(() => { btn.classList.add('need'); paint(); }); };
   const hint = () => { const h = document.querySelector('.loader__hint'); if (h && !h.dataset.snd) { h.dataset.snd = 1; h.innerHTML += '<br><span style="opacity:.85">♪ tap anywhere to start the music</span>'; } };
   const stop = () => { ramp(0, () => { a.pause(); paint(); }); };
 
-  btn.addEventListener('click', e => { e.stopPropagation(); want = !want; store.set('hayaMusic', want ? 'on' : 'off'); want ? play() : stop(); paint(); });
+  btn.addEventListener('click', e => { e.stopPropagation(); want = !want; if (want && ended) { ended = false; try { a.currentTime = 0; } catch (x) {} } store.set('hayaMusic', want ? 'on' : 'off'); want ? play() : stop(); paint(); });
 
   // first interaction starts the music (autoplay rules)
   const EVS = ['pointerdown', 'click', 'keydown', 'touchend'];
@@ -31,13 +33,20 @@
   EVS.forEach(ev => addEventListener(ev, unlock, true));
   play();                                            // works straight away if the browser already allows it
 
+  // fade out and stop at 1:30
+  a.addEventListener('timeupdate', () => {
+    if (ended) return;
+    if (a.currentTime >= END) { ended = true; clearInterval(fade); a.pause(); a.volume = 0; paint(); store.set('hayaMusicT', '999', true); }
+    else if (a.currentTime >= END - .6 && a.volume > 0 && !a._fo) { a._fo = 1; ramp(0, () => { a._fo = 0; }); }
+  });
+
   // pause while a video / the showreel is open
   const modal = document.getElementById('modal');
   if (modal) new MutationObserver(() => { held = !modal.hidden; held ? stop() : play(); }).observe(modal, { attributes: true, attributeFilter: ['hidden'] });
   document.addEventListener('visibilitychange', () => { if (document.hidden) { held = true; a.pause(); } else { held = !!(modal && !modal.hidden); play(); } });
 
   // remember position for the next page
-  const save = () => store.set('hayaMusicT', String(a.currentTime || 0), true);
+  const save = () => store.set('hayaMusicT', String(ended ? 999 : (a.currentTime || 0)), true);
   setInterval(save, 1000); addEventListener('pagehide', save);
 
   window.hayaMusic = { start: () => play(), playing: () => !a.paused, wanted: () => want };

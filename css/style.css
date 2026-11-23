@@ -522,3 +522,6 @@ html.l-ar .cat__cap .t{line-height:1.3}
 .hero__title .line{white-space:nowrap}
 html.l-ja .hero__title,html.l-ko .hero__title{font-size:calc(var(--u) * 6.6);line-height:1.1;font-weight:700}
 html.l-ar .hero__title{font-size:calc(var(--u) * 9.6);line-height:1}
+
+/* intro plays straight away: no counter / bar / hint */
+.loader__ui{display:none!important}
