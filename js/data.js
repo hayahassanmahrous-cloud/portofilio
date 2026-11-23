@@ -8,8 +8,19 @@
    Thumbnails + titles are pulled from Vimeo automatically when online.
    ============================================================ */
 window.HAYA_WORK = [
-  { id: '1247735539', h: '6131d4a687', desc: '', title: 'Shot 01', cat: '2d' },
-  { id: '1247734703', h: 'a62794ac88', desc: '', title: 'Shot 02', cat: '2d' },
+  // --- one project = one card; the viewer steps through its stages (rough → genka → douga → clean-up → final) ---
+  { title: 'Jujutsu Kaisen — Rough Animation & Stills', cat: '2d', desc: '', cover: './media/proj/cover-jjk.webp', groups: [
+      { k: 'anim', label: 'Rough animation', stages: [ { k: 'rough', label: 'Rough', video: './media/proj/jjk-rough.mp4' } ] },
+      { k: 'shot', n: 1, stages: [ { k: 'rough', label: 'Rough', img: './art/jjk-s1-rough.webp' }, { k: 'key2', label: 'Second key animation', img: './art/jjk-s1-key.webp' }, { k: 'final', label: 'Final', img: './art/jjk-s1-final.webp' } ] },
+      { k: 'shot', n: 2, stages: [ { k: 'rough', label: 'Rough', img: './art/jjk-s2-rough.webp' }, { k: 'cleanup', label: 'Clean-up', img: './art/jjk-s2-clean.webp' }, { k: 'final', label: 'Final', img: './art/jjk-s2-final.webp' } ] },
+      { k: 'shot', n: 3, stages: [ { k: 'rough', label: 'Rough', img: './art/jjk-s3-rough.webp' }, { k: 'cleanup', label: 'Clean-up', img: './art/jjk-s3-clean.webp' }, { k: 'final', label: 'Final', img: './art/jjk-s3-final.webp' } ] } ] },
+  { title: 'Intro Animation', cat: '2d', desc: '', cover: './media/proj/cover-intro.webp', stages: [
+      { k: 'rough',       label: 'Rough',          video: './media/proj/intro-rough.mp4' },
+      { k: 'genka_douga', label: 'Genka & Douga',  video: './media/proj/intro-genka.mp4' },
+      { k: 'final',       label: 'Final',          video: './media/proj/intro-final.mp4' } ] },
+  { title: 'Douja — Library Scene', cat: '2d', desc: '', cover: './media/proj/cover-library.webp', stages: [
+      { k: 'rough_genka_douga', label: 'Rough · Genka · Douga', video: './media/proj/lib-rough.mp4' },
+      { k: 'cleanup',           label: 'Clean-up',              video: './media/proj/lib-cleanup.mp4' } ] },
   { id: '1166961421', desc: '', title: 'Animation',  cat: '2d' },
   { id: '1166960065', desc: '', title: 'Shot 1',     cat: '2d' },
   { id: '1166959849', desc: '', title: 'Shot 2',     cat: '2d' },
@@ -52,18 +63,12 @@ window.HAYA_WORK = [
   { img: './art/art2.webp', desc: '', title: 'Brush in a Rush — Logo & Mascot', cat: 'concept' },
   { img: './art/art3.webp', desc: '', title: 'Character Design — Redwan the Entrepreneur', cat: 'concept' },
   { img: './art/art4.webp', desc: '', title: 'Desert Environment & Penguin', cat: 'concept' },
-  { img: './art/art5.webp', desc: '', title: 'Egyptian Spaceship — Throne Room', cat: 'concept' },
-  { img: './art/art6.webp', desc: '', title: 'Throne Room — Value Sketch & Palette', cat: 'concept' },
+  { title: 'Egyptian Spaceship — Throne Room', cat: 'concept', desc: '', cover: './art/art5.webp', stages: [ { k: 'final', label: 'Final', img: './art/art5.webp' }, { k: 'value', label: 'Value sketch & palette', img: './art/art6.webp' } ] },
   { img: './art/art7.webp', desc: '', title: 'Egyptian Light Whip', cat: 'concept' },
-  { img: './art/art8.webp', desc: '', title: 'Futuristic Lava City', cat: 'concept' },
-  { img: './art/art9.webp', desc: '', title: 'Lava City — Value Scale & Flat Colors', cat: 'concept' },
+  { title: 'Futuristic Lava City', cat: 'concept', desc: '', cover: './art/art8.webp', stages: [ { k: 'final', label: 'Final', img: './art/art8.webp' }, { k: 'flat', label: 'Value scale & flat colors', img: './art/art9.webp' } ] },
   { img: './art/art10.webp', desc: '', title: 'Rocky Coast — Thumbnails & Painting', cat: 'concept' },
-  { img: './art/art11.webp', desc: '', title: 'Cairo — Daytime Illustration', cat: 'concept' },
-  { img: './art/art12.webp', desc: '', title: 'Cairo — Night Illustration', cat: 'concept' },
-  { img: './art/art13.webp', desc: '', title: 'Cairo — Reference & Thumbnail', cat: 'concept' },
-  { img: './art/art14.webp', desc: '', title: 'Hades & Persephone — Final', cat: 'concept' },
-  { img: './art/art15.webp', desc: '', title: 'Hades & Persephone — Sketch', cat: 'concept' },
-  { img: './art/art16.webp', desc: '', title: 'Hades & Persephone — Moodboard', cat: 'concept' },
+  { title: 'Cairo', cat: 'concept', desc: '', cover: './art/art11.webp', stages: [ { k: 'day', label: 'Day', img: './art/art11.webp' }, { k: 'night', label: 'Night', img: './art/art12.webp' }, { k: 'ref', label: 'Reference & thumbnail', img: './art/art13.webp' } ] },
+  { title: 'Hades & Persephone', cat: 'concept', desc: '', cover: './art/art14.webp', stages: [ { k: 'final', label: 'Final', img: './art/art14.webp' }, { k: 'sketch', label: 'Sketch', img: './art/art15.webp' }, { k: 'moodboard', label: 'Moodboard', img: './art/art16.webp' } ] },
 ];
 
 /* Menu categories for "Work" (same as your Google Sites menu). Set a project's cat to one of these keys. */

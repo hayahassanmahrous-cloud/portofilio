@@ -9,7 +9,7 @@
   const CONFIG = {
     fps: 24,
     intro: { count: 41, path: i => `./intro/i${String(i).padStart(3, '0')}.webp` },
-    loop:  { count: 32, path: i => `./loop/l${String(i).padStart(3, '0')}.webp` },
+    loop:  { count: 1, path: () => './loop/home.webp' },
     showreel: { id: '1247734704', h: 'c49ad48897' },
     compareSource: 'local',   // 'local' = instant (recommended) · 'vimeo' = your Vimeo versions
     vimeoCompare: { genka: { id: '1247734705', h: '13a37f51ef' }, final: { id: '1247734706', h: '086fb55e4e' } },
@@ -175,7 +175,7 @@
   // thumbnail loader: Vimeo (oEmbed) / YouTube; resolves null when offline or private, so the placeholder stays
   const thumbCache = {};
   function thumbFor(w) {
-    if (w.img) return Promise.resolve({ src: w.img });
+    if (w.cover || w.img) return Promise.resolve({ src: w.cover || w.img });
     const key = w.yt || w.id; if (!key) return Promise.resolve(null);
     if (thumbCache[key]) return thumbCache[key];
     const load = src => new Promise(res => { const im = new Image(); im.onload = () => res(src); im.onerror = () => res(null); im.src = src; });
@@ -187,11 +187,62 @@
           .catch(() => null);
   }
 
+  // projects: one card, several stages (rough → genka → douga → clean-up → final)
+  const projGroups = w => w.groups || (w.stages ? [{ stages: w.stages }] : []);
+  const projStages = w => projGroups(w).reduce((a, g) => a + g.stages.length, 0);
+  const projHasVideo = w => projGroups(w).some(g => g.stages.some(s => s.video));
+  function buildProject(w) {
+    const groups = projGroups(w), root_ = document.createElement('div'); root_.className = 'proj';
+    const gbar = document.createElement('div'); gbar.className = 'proj__groups';
+    const tbar = document.createElement('div'); tbar.className = 'proj__tabs';
+    const scroll = document.createElement('div'); scroll.className = 'proj__scroll'; scroll.tabIndex = 0; scroll.setAttribute('data-lenis-prevent', '');
+    scroll.addEventListener('wheel', e => e.stopPropagation(), { passive: true }); scroll.addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
+    root_.append(gbar, tbar, scroll);
+    let gi = 0, io = null, items = [];
+    // finished work first, then back through the process: final → clean-up → rough
+    const ordered = g => { const l = g.stages.slice(), e = l[l.length - 1].k; return (e === 'final' || e === 'cleanup') && l[0].k !== 'final' ? l.reverse() : l; };
+    const mark = n => $$('button', tbar).forEach((b, k) => { const on = k === n; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', on); });
+    const render = () => {
+      if (io) io.disconnect(); const g = groups[gi], list = ordered(g);
+      items = list.map((st, n) => {
+        const it = document.createElement('figure'); it.className = 'proj__item'; let el;
+        if (st.video) { el = document.createElement('video'); el.src = st.video; el.loop = true; el.muted = true; el.defaultMuted = true; el.controls = true; el.playsInline = true; el.setAttribute('playsinline', ''); el.preload = n === 0 ? 'auto' : 'metadata'; el.className = 'is-video'; }
+        else { el = document.createElement('img'); el.src = st.img; el.alt = w.title + ' — ' + T('st.' + st.k, st.label); el.decoding = 'async'; el.loading = n === 0 ? 'eager' : 'lazy';
+          el.addEventListener('load', () => { if (el.naturalHeight > el.naturalWidth * 1.1) it.classList.add('is-tall'); }); }
+        const cap = document.createElement('figcaption'); cap.textContent = T('st.' + st.k, st.label);
+        it.append(el, cap); return it;
+      });
+      scroll.replaceChildren(...items); scroll.scrollTop = 0;
+      tbar.replaceChildren(...list.map((st, n) => {
+        const b = document.createElement('button'); b.type = 'button'; b.role = 'tab'; b.dataset.cursor = '';
+        b.innerHTML = `<i>${n + 1}</i><span></span>`; $('span', b).textContent = T('st.' + st.k, st.label);
+        b.addEventListener('click', () => { items[n].scrollIntoView({ behavior: 'smooth', block: 'start' }); mark(n); }); return b;
+      }));
+      tbar.hidden = list.length < 2; mark(0);
+      $$('button', gbar).forEach((b, n) => { const on = n === gi; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', on); });
+      if ('IntersectionObserver' in window) {
+        io = new IntersectionObserver(es => es.forEach(e => {
+          const v = $('video', e.target), n = items.indexOf(e.target);
+          if (e.isIntersecting) { if (v) { v.play().catch(() => {}); } if (e.intersectionRatio > .5) mark(n); } else if (v) v.pause();
+        }), { root: scroll, threshold: [0, .5] });
+        items.forEach(it => io.observe(it));
+      } else { const v = $('video', items[0]); v && v.play().catch(() => {}); }
+    };
+    if (groups.length > 1) groups.forEach((g, n) => {
+      const b = document.createElement('button'); b.type = 'button'; b.role = 'tab'; b.dataset.cursor = '';
+      b.textContent = g.label ? T('st.' + g.k, g.label) : FMT('st.shot', { n: g.n || n + 1 }); b.addEventListener('click', () => { gi = n; render(); }); gbar.appendChild(b);
+    }); else gbar.hidden = true;
+    render(); return root_;
+  }
+
   function makeCard(w, i, n) {
     const b = document.createElement('button');
     b.className = 'card'; b.type = 'button'; b.dataset.cursor = T('cur.play', 'Play'); b.dataset.lb = i;
     b.innerHTML = `<span class="card__in"><svg class="card__flower"><use href="#i-flower"/></svg><span class="card__img is-loading"><span class="ph" aria-hidden="true"><svg width="34" height="34"><use href="#i-play"/></svg></span><img alt="" decoding="async"><span class="card__play"><svg width="24" height="24"><use href="#i-play"/></svg></span></span><span class="card__cap"><b>${String(n + 1).padStart(2, '0')}</b> <span class="t"></span><em></em></span>${w.desc ? '<span class="card__desc"></span>' : ''}</span>`;
     $('.t', b).textContent = w.title; $('em', b).textContent = catLabel(w.cat); if (w.desc) $('.card__desc', b).textContent = w.desc;
+    const nst = projStages(w);
+    if (nst > 1) { const bd = document.createElement('span'); bd.className = 'card__badge'; bd.textContent = FMT('st.count', { n: nst }); $('.card__img', b).appendChild(bd); }
+    if (!w.video && !w.yt && !w.id && !projHasVideo(w)) b.classList.add('is-photo');
     b.setAttribute('aria-label', `${T('play', 'Play')} ${w.title}`);
     thumbFor(w).then(d => {
       const box = $('.card__img', b);
@@ -211,7 +262,7 @@
       const n = countOf(c.key), a = document.createElement('a');
       a.className = 'cat' + (n ? '' : ' is-soon'); a.href = `work.html#${c.key}`; a.dataset.iris = ''; a.dataset.cursor = n ? T('cur.open', 'Open') : T('cur.soon', 'Soon');
       a.innerHTML = `<span class="cat__in"><svg class="card__flower"><use href="#i-flower"/></svg><span class="cat__img is-loading" data-k="${c.key}"><span class="ph"><b>${c.code}</b></span><img alt="" decoding="async">${n ? '' : `<i class="cat__soon">${T('soon', 'Coming soon')}</i>`}</span><span class="cat__cap"><b>${String(i + 1).padStart(2, '0')}</b><span class="t">${T('cat.' + c.key + '.label', c.label)}</span><em>${n ? FMT(n === 1 ? 'proj1' : 'projN', { n }) : ''}</em></span><span class="cat__blurb">${T('cat.' + c.key + '.blurb', c.blurb)}</span></span>`;
-      const first = WORK.find(w => w.cat === c.key && (w.id || w.yt || w.img));
+      const first = WORK.find(w => w.cat === c.key && (w.id || w.yt || w.img || w.cover));
       first ? thumbFor(first).then(d => { const box = $('.cat__img', a); box.classList.remove('is-loading'); if (d) { $('img', a).src = d.src; box.classList.add('is-ready'); } else box.classList.add('is-empty'); }) : $('.cat__img', a).classList.replace('is-loading', 'is-empty');
       wrap.appendChild(a);
     });
@@ -557,7 +608,7 @@
     let lastFocus = null;
     const open = (node, caption, desc) => {
       lastFocus = document.activeElement;
-      stage.classList.toggle('is-img', node.tagName === 'IMG');
+      stage.classList.toggle('is-img', node.tagName === 'IMG'); stage.classList.toggle('is-proj', node.classList && node.classList.contains('proj'));
       stage.replaceChildren(node); cap.textContent = caption || '';
       if (desc) { const d = document.createElement('span'); d.className = 'modal__desc'; d.textContent = desc; cap.appendChild(d); }
       modal.hidden = false; requestAnimationFrame(() => modal.classList.add('is-open'));
@@ -575,9 +626,13 @@
     document.addEventListener('click', e => {
       const b = e.target.closest && e.target.closest('[data-lb]'); if (!b) return;
       const w = WORK[+b.dataset.lb]; let f;
-      if (w.img) { f = document.createElement('img'); f.src = w.img.replace('=w1280', '=w2000'); f.alt = w.title; f.onerror = () => { f.onerror = null; f.src = w.img; }; }
+      if (w.stages || w.groups) { f = buildProject(w); }
+      else if (w.video) { f = document.createElement('video'); f.src = w.video; f.autoplay = true; f.loop = true; f.controls = true; f.muted = true; f.playsInline = true; f.setAttribute('playsinline', ''); setTimeout(() => f.play().catch(() => {}), 0); }
+      else if (w.img) { f = document.createElement('img'); f.src = w.img.replace('=w1280', '=w2000'); f.alt = w.title; f.onerror = () => { f.onerror = null; f.src = w.img; }; }
       else { f = document.createElement('iframe'); f.src = w.yt ? `https://www.youtube.com/embed/${w.yt}?autoplay=1&rel=0` : vimeoSrc(w); f.allow = 'autoplay; fullscreen; picture-in-picture'; f.allowFullscreen = true; f.title = w.title; }
-      open(f, `${String(+b.dataset.lb + 1).padStart(2, '0')} · ${w.title} — ${catLabel(w.cat)}`, w.desc);
+      const num = (b.querySelector('.card__cap b') || {}).textContent || String(+b.dataset.lb + 1).padStart(2, '0');
+      open(f, `${num} · ${w.title} — ${catLabel(w.cat)}`, w.desc);
+      if (f.classList && f.classList.contains('proj')) { f.tabIndex = -1; f.focus({ preventScroll: true }); }
     });
     const showreel = () => {
       const f = document.createElement('iframe'); f.src = vimeoSrc(CONFIG.showreel); f.allow = 'autoplay; fullscreen; picture-in-picture'; f.allowFullscreen = true; f.title = 'Showreel — Haya Hassan';
@@ -695,6 +750,7 @@
 
   function startLanding() {
     loopPlayer = new Player($('#loopCanvas'), sets.loop, { cover: true, loop: true });
+    if (innerWidth < 760) loopPlayer.fx = .8;   // on phones keep the girl in view
     layoutHero();
     if (reduce) { loopPlayer.draw(0); return; }
     loopPlayer.play();

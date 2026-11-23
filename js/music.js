@@ -8,9 +8,9 @@
   const a = window.hayaAudio = new Audio(); a.src = SRC; a.loop = false; a.preload = 'auto'; a.volume = 0;
   let want = store.get('hayaMusic') !== 'off';      // visitor's choice
   let held = false;                                  // paused because a video is open / tab hidden
-  const END = 90;                                    // the track ends at 1:30
-  let ended = false;
-  const t0 = parseFloat(store.get('hayaMusicT')); if (t0 >= END) ended = true; else if (t0) a.addEventListener('loadedmetadata', () => { try { a.currentTime = t0; } catch (e) {} }, { once: true });
+  const END = 90;                                    // the loop point (1:30)
+  let ended = false;                                 // (kept for the old resume logic, never true now)
+  const t0 = parseFloat(store.get('hayaMusicT')); if (t0 && t0 < END) a.addEventListener('loadedmetadata', () => { try { a.currentTime = t0; } catch (e) {} }, { once: true });
 
   const btn = document.createElement('button');
   btn.className = 'snd'; btn.type = 'button'; btn.dataset.cursor = 'Music';
@@ -33,12 +33,9 @@
   EVS.forEach(ev => addEventListener(ev, unlock, true));
   play();                                            // works straight away if the browser already allows it
 
-  // fade out and stop at 1:30
-  a.addEventListener('timeupdate', () => {
-    if (ended) return;
-    if (a.currentTime >= END) { ended = true; clearInterval(fade); a.pause(); a.volume = 0; paint(); store.set('hayaMusicT', '999', true); }
-    else if (a.currentTime >= END - .6 && a.volume > 0 && !a._fo) { a._fo = 1; ramp(0, () => { a._fo = 0; }); }
-  });
+  // loop: the track runs 0:00 → 1:30, then starts again
+  a.addEventListener('timeupdate', () => { if (a.currentTime >= END) { try { a.currentTime = 0; } catch (e) {} if (a.paused && want && !held) a.play().catch(() => {}); } });
+  a.addEventListener('ended', () => { try { a.currentTime = 0; a.play().catch(() => {}); } catch (e) {} });
 
   // pause while a video / the showreel is open
   const modal = document.getElementById('modal');
