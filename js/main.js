@@ -10,7 +10,8 @@
     fps: 24,
     intro: { count: 41, path: i => `./intro/i${String(i).padStart(3, '0')}.webp` },
     loop:  { count: 1, path: () => './loop/home.webp' },
-    showreel: { id: '1247734704', h: 'c49ad48897' },
+    ball:  { count: 32, path: i => `./loop/ball/b${String(i).padStart(3, '0')}.webp` },   // the glowing orb, transparent frames on top of the still
+    showreel: { id: '1249816233' },
     compareSource: 'local',   // 'local' = instant (recommended) · 'vimeo' = your Vimeo versions
     vimeoCompare: { genka: { id: '1247734705', h: '13a37f51ef' }, final: { id: '1247734706', h: '086fb55e4e' } },
     genkaLocal: { genkaVideo: './media/genka.mp4', finalVideo: './media/final.mp4' },
@@ -42,7 +43,7 @@
   /* ============================================================
      Frame sets + player
      ============================================================ */
-  const sets = { intro: [], loop: [] };
+  const sets = { intro: [], loop: [], ball: [] };
   let loaded = 0;
   const totalFrames = CONFIG.intro.count + CONFIG.loop.count;
 
@@ -689,6 +690,7 @@
     stage.style.setProperty('--oy', (H - rh) * fy + 'px');
     stage.style.setProperty('--u', rw / 100 + 'px');
     if (loopPlayer) { loopPlayer.fx = fx; loopPlayer.fy = fy; loopPlayer.resize(); }
+    if (ballPlayer) { ballPlayer.fx = innerWidth < 760 ? .8 : fx; ballPlayer.fy = fy; ballPlayer.resize(); }
     layoutHero.fx = fx; layoutHero.fy = fy;
   }
 
@@ -746,15 +748,23 @@
      Boot: loader (intro animation) → landing loop
      ============================================================ */
   const loader = $('#loader'), num = $('#loaderNum'), bar = $('#loaderBar'), skip = $('#loaderSkip');
-  let revealed = false, introPlayer = null, loopPlayer = null;
+  let revealed = false, introPlayer = null, loopPlayer = null, ballPlayer = null;
 
   function startLanding() {
     loopPlayer = new Player($('#loopCanvas'), sets.loop, { cover: true, loop: true });
     if (innerWidth < 760) loopPlayer.fx = .8;   // on phones keep the girl in view
+    const bc = $('#ballCanvas');
+    if (bc) {
+      loadSet('ball', 1).then(() => {
+        ballPlayer = new Player(bc, sets.ball, { cover: true, loop: true }); layoutHero();
+        if (reduce) { ballPlayer.draw(0); return; }
+        ballPlayer.play();
+      });
+    }
     layoutHero();
     if (reduce) { loopPlayer.draw(0); return; }
     loopPlayer.play();
-    new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? loopPlayer.resume() : loopPlayer.pause()), { threshold: 0 }).observe($('#stage'));
+    new IntersectionObserver(es => es.forEach(e => { e.isIntersecting ? loopPlayer.resume() : loopPlayer.pause(); if (ballPlayer) e.isIntersecting ? ballPlayer.resume() : ballPlayer.pause(); }), { threshold: 0 }).observe($('#stage'));
   }
 
   // intro → homepage: no hold, no fade — a fast iris wipe over the landing loop while the title pops in
